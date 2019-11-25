@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hello Bulma!</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.js"
+    integrity="sha256-BTlTdQO9/fascB1drekrDVkaKd9PkwBymMlHOiG+qLI=" crossorigin="anonymous"></script>
+  <style>
+    .card-content {
+      padding: 0.75rem;
+    }
+    .card-footer-item {
+      padding: 0.25rem;
+    }
+    .section {
+      padding: 0.75rem 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <section class="section">
+    <div class="columns is-mobile">
+      <div class="column is-three-fifths is-offset-one-fifth">
+        <div class="container has-text-centered">
+          <h1 class="title">Todo List</h1>
+        </div>
+        <hr>
+        <form action="/" method="POST">
+          <div class="field has-addons has-addons-centered">
+            <div class="control is-expanded">
+              <input class="input" type="text" placeholder="Add a task" name="name">
+            </div>
+            <div class="control">
+              <button class="button is-info">Add</button>
+            </div>
+          </div>
+        </form>
+        {% for task in tasks %}
+        <section class="section">
+          <div class="card">
+            <div class="card-content">
+              <div class="content has-text-centered">
+                {{ task.name }}
+                <br>
+                <time datetime="2016-1-1">{{ task.pub_date.strftime('%Y-%m-%d %H:%M') }}</time>
+              </div>
+            </div>
+            <footer class="card-footer">
+              <a class="card-footer-item" id="update-{{task.id}}">Update</a>
+              <a class="card-footer-item" id="complete-{{task.id}}">Complete</a>
+            </footer>
+          </div>
+        </section>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% for task in tasks %}
+    <div class="modal" id="modal-update-{{task.id}}">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Update</p>
+          <button class="delete" id="update-{{task.id}}-complete"></button>
+        </header>
+        <section class="modal-card-body">
+          <form method="POST" action="/update">
+            <div class="field">
+              <label class="label">Task name:</label>
+              <div class="control">
+                <input class="input" type="hidden" name="oldtask" value="{{task.name}}">
+                <input class="input" type="text" placeholder="task name" name="newtask">
+              </div>
+            </div>
+            <div class="field">
+              <p class="control">
+                <button class="button is-success">Update</button>
+                <button class="button" id="update-{{task.id}}-close" type="button">Cancel</button>
+              </p>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+    <div class="modal" id="modal-complete-{{task.id}}">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Complete</p>
+          <button class="delete" id="complete-{{task.id}}-complete"></button>
+        </header>
+        <section class="modal-card-body">
+          <form method="POST" action="/complete">
+            <div class="field">
+              <p class="subtitle">complete this record ?</p>
+              <div class="control">
+                <input class="input" type="hidden" value="{{task.name}}" name="name">
+              </div>
+            </div>
+            <div class="field">
+              <p class="control">
+                <button class="button is-success">complete</button>
+                <button class="button" id="complete-{{task.id}}-close" type="button">Cancel</button>
+              </p>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+  <script>
+    {% for task in tasks %}
+    $('#update-{{task.id}}').on('click', function () {
+      $('#modal-update-{{task.id}}').addClass('is-active');
+    })
+
+    $('#update-{{task.id}}-close, #update-{{task.id}}-complete').on('click', function () {
+      $('#modal-update-{{task.id}}').removeClass('is-active');
+    })
+
+    $('#complete-{{task.id}}').on('click', function () {
+      $('#modal-complete-{{task.id}}').addClass('is-active');
+    })
+
+    $('#complete-{{task.id}}-close, #complete-{{task.id}}-complete').on('click', function () {
+      $('#modal-complete-{{task.id}}').removeClass('is-active');
+    })
+    {% endfor %}
+  </script>
+</body>
+
+</html>
